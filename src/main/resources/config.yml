@@ -1,0 +1,15 @@
+query-timeout: 10
+cache-expire-seconds: 3600
+ticket-display-name: "&f&lおみくじ引換券"
+ticket-lore1: "ごろごろ神社でおみくじを引くことができます。"
+ticket-lore2: "通常カプセルトイには使用できません。"
+sign-line1-prefix: "&6&l"
+sign-line2-prefix: ""
+sign-line3: "&8おみくじ引換券を"
+sign-line4: "&8持って右クリック！"
+hold-the-ticket: "おみくじ引換券を右手に持ってください。"
+not-found-ticket-code: "おみくじ引換券は使用済みか未登録です。"
+not-found-chest1: "おみくじのチェストが見つかりません。"
+not-found-chest2: "/omikujicapsluetoy modify <capsluetoy_name>でチェストをセットしてください。"
+not-found-pick: "ハズレました。"
+found-pick: "あなたの運勢は..."

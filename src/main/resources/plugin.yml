@@ -1,0 +1,28 @@
+name: OmikujiCapslueToy
+version: 1.0
+api-version: 1.15
+description: omikuji capsluetoy.
+author: kubotan
+main: space.gorogoro.omikujicapsluetoy.OmikujiCapslueToy
+
+commands:
+  omikujicapsluetoy:
+    description: Commands to manage your event capsluetoy
+    usage: |
+      Use /help omikujicapsluetoy [subcommand] for more information
+      /<command> list - List all capsluetoy
+      /<command> modify <capsluetoy_name> - Modify a capsluetoy
+      /<command> delete <capsluetoy_name> - Delete a capsluetoy
+      /<command> ticket <player_name> - Issue a ticket
+  omikujicapsluetoy list:
+    description: List all capsluetoy
+    usage: /<command> list
+  omikujicapsluetoy modify:
+    description: Modify a capsluetoy chest
+    usage: /<command> modify <capsluetoy_name>
+  omikujicapsluetoy delete:
+    description: Delete a capsluetoy
+    usage: /<command> delete <capsluetoy_name>
+  omikujicapsluetoy ticket:
+    description: Issue a ticket
+    usage: /<command> ticket <player_name>
