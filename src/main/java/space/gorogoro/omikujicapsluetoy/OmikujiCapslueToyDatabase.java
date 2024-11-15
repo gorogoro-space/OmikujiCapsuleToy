@@ -172,8 +172,6 @@ public class OmikujiCapslueToyDatabase {
         + ");"
       );
       stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS capsluetoy_name_uindex ON capsluetoy (capsluetoy_name);");
-      stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS world_name_sign_xyz_uindex ON capsluetoy (world_name, sign_x, sign_y, sign_z);");
-      stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS world_name_chest_xyz_uindex ON capsluetoy (world_name, chest_x, chest_y, chest_z);");
 
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticket ("
         + "  id INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -435,7 +433,6 @@ public class OmikujiCapslueToyDatabase {
    */
   public Integer getCapslueToy(String capslueToyName, String capslueToyDisplayName, String capslueToyDetail, String worldName, Integer signX, Integer signY, Integer signZ){
     PreparedStatement prepStmt = null;
-    ResultSet rs = null;
     Integer capslueToyId = null;
     try {
       capslueToyId = getCapslueToy(capslueToyName);
@@ -461,18 +458,12 @@ public class OmikujiCapslueToyDatabase {
       prepStmt.setInt(7, signZ);
       prepStmt.addBatch();
       prepStmt.executeBatch();
-      rs = prepStmt.getGeneratedKeys();
-      if (rs.next()) {
-        capslueToyId = rs.getInt(1);
-      }
-      closeRs(rs);
       closePrepStmt(prepStmt);
       refreshCache();
-
+      capslueToyId = getCapslueToy(capslueToyName);
     } catch (SQLException e) {
       OmikujiCapslueToyUtility.logStackTrace(e);
     } finally {
-      closeRs(rs);
       closePrepStmt(prepStmt);
     }
     return capslueToyId;
