@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -99,21 +97,32 @@ public class OmikujiCapslueToyUtility {
    * @return String code
    */
   public static String generateCode(){
+    
+    Random random = new Random();
+    int length1 = 4;
+    StringBuilder randomString1 = new StringBuilder(length1);
+    for (int i = 0; i < length1; i++) {
+      int index = random.nextInt(NUMALPHA.length());
+      randomString1.append(NUMALPHA.charAt(index));
+    }
+    int length2 = 6;
+    StringBuilder randomString2 = new StringBuilder(length2);
+    for (int i = 0; i < length2; i++) {
+      int index = random.nextInt(NUMALPHA.length());
+      randomString2.append(NUMALPHA.charAt(index));
+    }
+    int length3 = 4;
+    StringBuilder randomString3 = new StringBuilder(length3);
+    for (int i = 0; i < length3; i++) {
+      int index = random.nextInt(NUMALPHA.length());
+      randomString3.append(NUMALPHA.charAt(index));
+    }
+    
     return String.format("%s-%s-%s",
-      RandomStringUtils.random(4, NUMALPHA),
-      RandomStringUtils.random(6, NUMALPHA),
-      RandomStringUtils.random(4, NUMALPHA)
+        randomString1,
+        randomString2,
+        randomString3
     );
-  }
-
-  /**
-   * Scan Format
-   * @param String format
-   * @param String str
-   * @return String value
-   */
-  public static String scanf(String format, String str) {
-    return StringUtils.difference(format, str);
   }
   
   public static ArrayList<Player> getTarget(Plugin capsluetoy, String selector) {
