@@ -156,8 +156,6 @@ public class OmikujiCapsuleToyDatabase {
     try{
       stmt = getStmt();
 
-      migrateMisspelledNames(stmt);
-
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS capsuletoy ("
         + "  id INTEGER PRIMARY KEY AUTOINCREMENT"
         + "  ,capsuletoy_name STRING NOT NULL"
@@ -193,47 +191,6 @@ public class OmikujiCapsuleToyDatabase {
     } finally {
       closeRs(rs);
       closeStmt(stmt);
-    }
-  }
-
-  /**
-   * 1.x の綴り(capsluetoy)の表・列・索引を、2.0 の綴り(capsuletoy)に変える。
-   * 新しい表がすでにあるときは何もしない。
-   * @param Statement Statement
-   */
-  private void migrateMisspelledNames(Statement stmt) throws SQLException {
-    if(!existsTable(stmt, "capsluetoy") || existsTable(stmt, "capsuletoy")) {
-      return;
-    }
-
-    Connection c = getCon();
-    c.setAutoCommit(false);
-    try {
-      stmt.executeUpdate("ALTER TABLE capsluetoy RENAME TO capsuletoy;");
-      stmt.executeUpdate("ALTER TABLE capsuletoy RENAME COLUMN capsluetoy_name TO capsuletoy_name;");
-      stmt.executeUpdate("ALTER TABLE capsuletoy RENAME COLUMN capsluetoy_display_name TO capsuletoy_display_name;");
-      stmt.executeUpdate("ALTER TABLE capsuletoy RENAME COLUMN capsluetoy_detail TO capsuletoy_detail;");
-      // 索引は呼び出し元で capsuletoy_name_uindex として作り直す
-      stmt.executeUpdate("DROP INDEX IF EXISTS capsluetoy_name_uindex;");
-      c.commit();
-      capsuletoy.getLogger().info("Renamed the database table capsluetoy to capsuletoy.");
-    } catch (SQLException e) {
-      c.rollback();
-      throw e;
-    } finally {
-      c.setAutoCommit(true);
-    }
-  }
-
-  /**
-   * Determine whether the table exists.
-   * @param Statement Statement
-   * @param String table name
-   * @return boolean true:exists false:not exists
-   */
-  private static boolean existsTable(Statement stmt, String tableName) throws SQLException {
-    try (ResultSet rs = stmt.executeQuery("SELECT 1 FROM sqlite_master WHERE type='table' AND name='" + tableName + "'")) {
-      return rs.next();
     }
   }
 

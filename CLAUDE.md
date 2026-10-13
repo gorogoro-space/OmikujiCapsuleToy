@@ -50,7 +50,7 @@
 ### データの保存
 - `plugins/OmikujiCapsuleToy/` の中だけを使う(`config.yml`、`sqlite.db`)。プラグインフォルダ以外には何も書き込まない
 - `config.yml` はプラグインが書き換えない(無ければ jar 内のものを書き出すだけ)
-- `sqlite.db` の表(`capsuletoy`、`ticket`)を変えるときは、既存のデータベースの移行を必ず考える。サーバー上に既存のデータがある前提(例: 2.0 で、1.x の表 `capsluetoy` と列 `capsluetoy_*` を起動時に `capsuletoy` / `capsuletoy_*` へ自動で名前を変えている)
+- `sqlite.db` の表(`capsuletoy`、`ticket`)を変えるときは、既存のデータベースの移行を必ず考える。サーバー上に既存のデータがある前提(例: 2.0 では、1.x の表 `capsluetoy` と列 `capsluetoy_*` を起動時に `capsuletoy` / `capsuletoy_*` へ自動で名前を変えていた。移行が済んだので 2.1 で削除した。1.x からは 2.0 を経由して更新する)
 - 1.x のデータフォルダ `plugins/OmikujiCapslueToy/` は自動では移さない。README の手順で管理者が移す
 - `ticket` 表は作るだけで、今は使っていない(券は番号を持たない。下の「機能仕様」を参照)
 
@@ -62,7 +62,7 @@
 
 (現在の実装の動作。仕様を変えたらここを更新する)
 
-- **起動時(`onEnable`)**: `config.yml` が無ければ jar 内のものを保存する。データベースの表を作り(1.x の名前なら直す)、看板のキャッシュを読み、リスナーを登録する
+- **起動時(`onEnable`)**: `config.yml` が無ければ jar 内のものを保存する。データベースの表を作り、看板のキャッシュを読み、リスナーを登録する
 - **看板の設置(`SignChangeEvent`)**: 1 行目が `[omikujicapsuletoy]`(大文字小文字は問わない)で、`omikujicapsuletoy.create` を持つときに登録する。2 行目が登録名(英数字と `_` だけ)、3 行目が表示名、4 行目が説明。登録後は `sign-line1-prefix` などの設定で看板の文字を書き換える。同じ場所に登録済みならキャンセルする
 - **看板の右クリック**: **壁に貼り付けた看板(`WallSign`)だけが対象。** 立て看板・吊り看板が反応しないのは仕様で、不具合ではない(`onPlayerInteract` の `data instanceof Sign` は常に偽だが、そのままにしている)。登録済みの看板なら操作をキャンセルする。手に持った物が紙で、説明がちょうど 3 行あり(説明の無い紙も `hold-the-ticket`)、3 行目に固定の文字列(`OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE`)が含まれていれば引換券とみなす。違えば `hold-the-ticket` / `not-found-ticket-code`。チェストが無ければ `not-found-chest1`・`not-found-chest2`。使えたら券を 1 枚減らし、チェストの枠を 1 つランダムに選ぶ。空の枠ならハズレ(`not-found-pick`)。中身の複製を持ち物に入れて `found-pick`。入りきらなければ束ごと足元に落として `dropped-pick`(1.0 までは入りきらない分が消えていた)。チェストの中身は減らない
   - 券は番号を持たず、全員の券が同じ文字列で判定される。データベースでの使用済みの管理はしていない
@@ -80,7 +80,7 @@
 - `src/main/java/space/gorogoro/omikujicapsuletoy/OmikujiCapsuleToy.java` — メインクラス。起動・終了、コマンドの振り分け
 - `OmikujiCapsuleToyCommand.java` — 各サブコマンドの処理、引換券の作成
 - `OmikujiCapsuleToyListener.java` — 看板の設置、看板とチェストの右クリック
-- `OmikujiCapsuleToyDatabase.java` — SQLite の読み書き(1.x の表の名前の変換を含む)と看板のキャッシュ
+- `OmikujiCapsuleToyDatabase.java` — SQLite の読み書きと看板のキャッシュ
 - `OmikujiCapsuleToyUtility.java` — `modify` 中の状態、セレクター(`@a` など)、メッセージの送信
 - `src/main/resources/plugin.yml` — プラグイン定義
 - `src/main/resources/config.yml` — 引換券の名前・説明、看板の文字、メッセージ

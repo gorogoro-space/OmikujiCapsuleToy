@@ -48,7 +48,9 @@ Please place the .jar file in the Paper plugins folder.
 | 権限 | `omikujicapsluetoy.list` など | `omikujicapsuletoy.list` など |
 | 看板の 1 行目 | `[omikujicapsluetoy]` | `[omikujicapsuletoy]` |
 
-1. サーバーを止め、古い jar(`OmikujiCapslueToy-1.0.jar`)を消して、新しい jar を置きます。
+**1.x から更新するときは、必ず先に [v2.0](https://github.com/gorogoro-space/OmikujiCapsuleToy/releases/tag/v2.0) を入れて一度起動してください。** データベースの表と列の名前を直す処理は 2.0 にだけ入っています(2.1 で削除しました)。1.x から直接 2.1 以降に上げると、登録済みの看板とチェストが読まれません。
+
+1. サーバーを止め、古い jar(`OmikujiCapslueToy-1.0.jar`)を消して、`OmikujiCapsuleToy-2.0.jar` を置きます。
 2. データフォルダの名前を変えます。
    ~~~
    # cd plugins/
@@ -58,6 +60,7 @@ Please place the .jar file in the Paper plugins folder.
 3. `config.yml` の `not-found-chest2` に古いコマンド名が書いてあれば、`/omikujicapsuletoy modify <capsuletoy_name>` に直します。
 4. 権限プラグインで古い権限を与えていた場合は、新しい権限を与え直します。
 5. サーバーを起動します。データベースの表と列の名前は、初回の起動時に自動で直ります(ログに `Renamed the database table capsluetoy to capsuletoy.` と出ます)。登録済みの看板とチェストはそのまま使えます。配った引換券もそのまま使えます。
+6. ログを確かめたら、サーバーを止めて 2.0 の jar を消し、最新の jar を置いて起動します。
 
 # Disclaimer
 Do not assume any responsibility by use. Please use it at your own risk.
@@ -88,7 +91,7 @@ IntelliJ IDEA 上で正しくプラグイン（JARファイル）を生成する
 ### 📦 生成されたファイルの場所
 ビルドが成功すると、プロジェクトのルート直下に `build/libs` フォルダが作成（または更新）され、その中に中身の詰まった正しい JAR ファイルが生成されます。
 
-* **生成先:** `build/libs/OmikujiCapsuleToy-<version>.jar`(例: `OmikujiCapsuleToy-2.0.jar`。バージョンは `gradle.properties` の `version`)
+* **生成先:** `build/libs/OmikujiCapsuleToy-<version>.jar`(例: `OmikujiCapsuleToy-2.1.jar`。バージョンは `gradle.properties` の `version`)
 
 この JAR ファイルを Minecraft サーバーの `plugins` フォルダに配置してください。
 
