@@ -1,6 +1,6 @@
 name: OmikujiCapslueToy
-version: 1.0
-api-version: 1.15
+version: '${version}'
+api-version: '1.21.11'
 description: omikuji capsluetoy.
 author: kubotan
 main: space.gorogoro.omikujicapsluetoy.OmikujiCapslueToy
