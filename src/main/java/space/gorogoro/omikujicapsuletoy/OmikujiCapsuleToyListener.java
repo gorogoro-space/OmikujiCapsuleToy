@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -51,7 +52,7 @@ public class OmikujiCapsuleToyListener implements Listener{
   @EventHandler(priority=EventPriority.HIGHEST)
   public void onSignChange(SignChangeEvent event) {
     try {
-      if(!event.getLine(0).toLowerCase().equals("[omikujicapsuletoy]")) {
+      if(!OmikujiCapsuleToyUtility.fromSignComponent(event.line(0)).toLowerCase().equals("[omikujicapsuletoy]")) {
         return;
       }
 
@@ -66,9 +67,9 @@ public class OmikujiCapsuleToyListener implements Listener{
         return;
       }
 
-      String capsuleToyName = event.getLine(1);
-      String capsuleToyDisplayName = event.getLine(2);
-      String capsuleToyDetail = event.getLine(3);
+      String capsuleToyName = OmikujiCapsuleToyUtility.fromSignComponent(event.line(1));
+      String capsuleToyDisplayName = OmikujiCapsuleToyUtility.fromSignComponent(event.line(2));
+      String capsuleToyDetail = OmikujiCapsuleToyUtility.fromSignComponent(event.line(3));
       String worldName = signLoc.getWorld().getName();
       Integer x = signLoc.getBlockX();
       Integer y = signLoc.getBlockY();
@@ -86,10 +87,10 @@ public class OmikujiCapsuleToyListener implements Listener{
         throw new Exception("Can not get CapsuleToy. CapsuleToyName=" + capsuleToyName);
       }
 
-      event.setLine(0, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line1-prefix") + capsuleToyDisplayName));
-      event.setLine(1, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line2-prefix") + capsuleToyDetail));
-      event.setLine(2, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line3")));
-      event.setLine(3, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line4")));
+      event.line(0, OmikujiCapsuleToyUtility.toSignComponent(OmikujiCapsuleToyUtility.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line1-prefix") + capsuleToyDisplayName)));
+      event.line(1, OmikujiCapsuleToyUtility.toSignComponent(OmikujiCapsuleToyUtility.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line2-prefix") + capsuleToyDetail)));
+      event.line(2, OmikujiCapsuleToyUtility.toSignComponent(OmikujiCapsuleToyUtility.configText(capsuletoy, "sign-line3")));
+      event.line(3, OmikujiCapsuleToyUtility.toSignComponent(OmikujiCapsuleToyUtility.configText(capsuletoy, "sign-line4")));
 
     } catch (Exception e){
       OmikujiCapsuleToyUtility.logStackTrace(e);
@@ -131,27 +132,28 @@ public class OmikujiCapsuleToyListener implements Listener{
 
       ItemStack ticket = p.getInventory().getItemInMainHand();
       if( !ticket.getType().equals(Material.PAPER) ) {
-        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("hold-the-ticket")));
+        OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "hold-the-ticket"));
         return;
       }
 
-      List<String> lores = ticket.getItemMeta().getLore();
-      if( lores.size() != 3) {
-        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("hold-the-ticket")));
+      List<Component> lores = ticket.getItemMeta().lore();
+      if( lores == null || lores.size() != 3) {
+        OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "hold-the-ticket"));
         return;
       }
 
 
       capsuletoy.getCommand();
-      if(!lores.get(2).contains(OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE)) {
-        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-ticket-code")));
+      // 色コードを除いた文字だけで判定する。これまでに配った券(String 版 API で作ったもの)も同じように判定できる
+      if(!OmikujiCapsuleToyUtility.toPlainText(lores.get(2)).contains(OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE)) {
+        OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "not-found-ticket-code"));
         return;
       }
 
       Chest chest = capsuletoy.getDatabase().getCapsuleToyChest(signLoc);
       if(chest == null) {
-        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-chest1")));
-        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-chest2")));
+        OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "not-found-chest1"));
+        OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "not-found-chest2"));
         return;
       }
 
@@ -161,13 +163,13 @@ public class OmikujiCapsuleToyListener implements Listener{
       int pick = new Random().nextInt(iv.getSize());
       ItemStack pickItem = iv.getItem(pick);
       if(pickItem == null) {
-        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-pick")));
+        OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "not-found-pick"));
         return;
       }
 
       ItemStack sendItem = pickItem.clone();
       p.getInventory().addItem(sendItem);
-      OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("found-pick")));
+      OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "found-pick"));
 
     } catch (Exception e){
       OmikujiCapsuleToyUtility.logStackTrace(e);

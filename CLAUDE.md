@@ -31,7 +31,10 @@
 - SQLite の JDBC ドライバ(`org.sqlite.JDBC`)はサーバー(Paper)に入っているものを使う。jar には同梱しない
 - パッケージ: `space.gorogoro.omikujicapsuletoy`(**すべて小文字**。大文字が混ざると plugin.yml の main と一致せず起動しない)
 - **綴りは `capsule`。** 1.x までは `capslue` と誤っていた(プラグイン名・パッケージ・コマンド・権限・看板の 1 行目・データベースの表と列)。2.0 ですべて直し、旧名は残していない。新しく名前を付けるときも `capsule` にする
-- 既存のコードは非推奨・削除予定の API(`ChatColor`、String 版の `setDisplayName`・`setLore`・`getLine`・`setLine`、`finalize` という名前のメソッドなど)を使っている。新しく書く処理では使わない
+- 非推奨・削除予定の API は使わない(2.0 で `-Xlint:all` の警告を 0 件にした)。色コードの変換(`ChatColor.translateAlternateColorCodes` の代わり)、config.yml の文の読み込み、アイテムの名前・説明文と看板の行の Component との変換は `OmikujiCapsuleToyUtility` の関数を使う
+  - 引換券の名前・説明文は Component 版 API(`displayName`・`lore`)で作り、`toItemComponent` で斜体を外す(旧 String 版 API と見た目をそろえるため)
+  - 引換券の判定は、説明文の 3 行目を `toPlainText`(色コードを除いた文字)にして行う。1.0 で String 版 API で作った券も同じように判定できる。判定を変えるときは、配布済みの古い券が使えなくならないか必ず確かめる
+  - `modify` 中のプレイヤーは、メタデータではなく `OmikujiCapsuleToyUtility` の Map(UUID → 登録名)で覚える。プラグインの終了時に消す
 - 動作確認はサーバーを再起動して行う。PlugManX での読み込みは権限やコマンドの登録が不完全になることがある
 
 ## 最重要の設計方針
@@ -61,10 +64,10 @@
 
 - **起動時(`onEnable`)**: `config.yml` が無ければ jar 内のものを保存する。データベースの表を作り(1.x の名前なら直す)、看板のキャッシュを読み、リスナーを登録する
 - **看板の設置(`SignChangeEvent`)**: 1 行目が `[omikujicapsuletoy]`(大文字小文字は問わない)で、`omikujicapsuletoy.create` を持つときに登録する。2 行目が登録名(英数字と `_` だけ)、3 行目が表示名、4 行目が説明。登録後は `sign-line1-prefix` などの設定で看板の文字を書き換える。同じ場所に登録済みならキャンセルする
-- **看板の右クリック**: 登録済みの看板なら操作をキャンセルする。手に持った物が紙で、説明がちょうど 3 行あり、3 行目に固定の文字列(`OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE`)が含まれていれば引換券とみなす。違えば `hold-the-ticket` / `not-found-ticket-code`。チェストが無ければ `not-found-chest1`・`not-found-chest2`。使えたら券を 1 枚減らし、チェストの枠を 1 つランダムに選ぶ。空の枠ならハズレ(`not-found-pick`)。中身の複製を持ち物に入れて `found-pick`(チェストの中身は減らない)
+- **看板の右クリック**: 登録済みの看板なら操作をキャンセルする。手に持った物が紙で、説明がちょうど 3 行あり(説明の無い紙も `hold-the-ticket`)、3 行目に固定の文字列(`OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE`)が含まれていれば引換券とみなす。違えば `hold-the-ticket` / `not-found-ticket-code`。チェストが無ければ `not-found-chest1`・`not-found-chest2`。使えたら券を 1 枚減らし、チェストの枠を 1 つランダムに選ぶ。空の枠ならハズレ(`not-found-pick`)。中身の複製を持ち物に入れて `found-pick`(チェストの中身は減らない)
   - 券は番号を持たず、全員の券が同じ文字列で判定される。データベースでの使用済みの管理はしていない
   - 持ち物に入りきらなかった分は捨てられる(足元には落とさない)
-- **チェストの右クリック**: `/omikujicapsuletoy modify <名前>` のあとだけ、そのチェストを景品のチェストとして登録する(登録中のプレイヤーはメタデータ `omikujicapsuletoy.chest` で覚える)
+- **チェストの右クリック**: `/omikujicapsuletoy modify <名前>` のあとだけ、そのチェストを景品のチェストとして登録する
 - **コマンド**: `list`・`modify`・`delete` はそれぞれ `omikujicapsuletoy.list`・`omikujicapsuletoy.modify`・`omikujicapsuletoy.delete` が必要(`plugin.yml` に未登録なので、既定では OP のみ)。`ticket <プレイヤー名|@a|@p|@s|@r>` は OP・コンソール・コマンドブロック。引換券を空いている枠に入れる(空きが無ければ渡さない)。`reload`・`enable`・`disable` は OP のみ
 
 ## 過去にハマった点(他プロジェクトでの経験)

@@ -151,7 +151,7 @@ public class OmikujiCapsuleToy extends JavaPlugin{
     }catch(Exception e){
       OmikujiCapsuleToyUtility.logStackTrace(e);
     }finally{
-      command.finalize();
+      command.clear();
     }
     return hideUsageFlag;
   }
@@ -162,8 +162,9 @@ public class OmikujiCapsuleToy extends JavaPlugin{
   @Override
   public void onDisable(){
     try{
-      database.finalize();
-      command.finalize();
+      database.close();
+      command.clear();
+      OmikujiCapsuleToyUtility.clearPunches();
 
       // Unregister all event listener.
       HandlerList.unregisterAll(this);

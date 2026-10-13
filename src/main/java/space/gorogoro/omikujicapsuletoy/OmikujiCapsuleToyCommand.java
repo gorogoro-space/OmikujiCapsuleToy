@@ -3,7 +3,9 @@ package space.gorogoro.omikujicapsuletoy;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +23,6 @@ public class OmikujiCapsuleToyCommand {
   private OmikujiCapsuleToy capsuletoy;
   private CommandSender sender;
   private String[] args;
-  protected static final String META_CHEST = "omikujicapsuletoy.chest";
   protected static final String FORMAT_TICKET_CODE = "EVENT CODE:%s";
   protected static final String EVENT_OMIKUJI_CODE = "2bCq4f7lUy";
 
@@ -52,9 +53,10 @@ public class OmikujiCapsuleToyCommand {
   }
 
   /**
-   * Finalize
+   * Clear
    */
-  public void finalize() {
+  // Object#finalize(削除予定)と同じ名前を避けるため clear にしている
+  public void clear() {
     try{
       this.sender = null;
       this.args = null;
@@ -137,16 +139,18 @@ public class OmikujiCapsuleToyCommand {
 
     ItemStack ticket = new ItemStack(Material.PAPER, 1);
     ItemMeta im = ticket.getItemMeta();
-    im.setDisplayName(ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("ticket-display-name")));
-    ArrayList<String> lore = new ArrayList<String>();
-    lore.add(ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("ticket-lore1")));
-    lore.add(ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("ticket-lore2")));
-    lore.add("スクラッチ:  " + ChatColor.RESET + ChatColor.MAGIC + EVENT_OMIKUJI_CODE + ChatColor.RESET);
-    im.setLore(lore);
+    im.displayName(OmikujiCapsuleToyUtility.toItemComponent(OmikujiCapsuleToyUtility.configText(capsuletoy, "ticket-display-name")));
+    List<Component> lore = new ArrayList<Component>();
+    lore.add(OmikujiCapsuleToyUtility.toItemComponent(OmikujiCapsuleToyUtility.configText(capsuletoy, "ticket-lore1")));
+    lore.add(OmikujiCapsuleToyUtility.toItemComponent(OmikujiCapsuleToyUtility.configText(capsuletoy, "ticket-lore2")));
+    // §r は RESET、§k は MAGIC
+    char c = OmikujiCapsuleToyUtility.COLOR_CHAR;
+    lore.add(OmikujiCapsuleToyUtility.toItemComponent("スクラッチ:  " + c + "r" + c + "k" + EVENT_OMIKUJI_CODE + c + "r"));
+    im.lore(lore);
     ticket.setItemMeta(im);
     p.getInventory().setItem(emptySlot, ticket);
 
-    OmikujiCapsuleToyUtility.sendMessage(sender, "Issue a ticket. player_name=" +  p.getDisplayName());
+    OmikujiCapsuleToyUtility.sendMessage(sender, "Issue a ticket. player_name=" +  LegacyComponentSerializer.legacySection().serialize(p.displayName()));
     return true;
   }
 
