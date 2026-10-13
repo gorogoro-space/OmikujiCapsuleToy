@@ -394,7 +394,8 @@ public class OmikujiCapsuleToyDatabase {
   public boolean isCapsuleToy(Location loc){
     try {
       boolean cacheClear = false;
-      if(expireCache > System.currentTimeMillis()) {
+      // 期限が過ぎたときだけ読み直す
+      if(expireCache <= System.currentTimeMillis()) {
         cacheClear = true;
       }
       return isCapsuleToy(loc, cacheClear);
