@@ -1,28 +1,28 @@
-name: OmikujiCapslueToy
+name: OmikujiCapsuleToy
 version: '${version}'
 api-version: '1.21.11'
-description: omikuji capsluetoy.
+description: omikuji capsuletoy.
 author: kubotan
-main: space.gorogoro.omikujicapsluetoy.OmikujiCapslueToy
+main: space.gorogoro.omikujicapsuletoy.OmikujiCapsuleToy
 
 commands:
-  omikujicapsluetoy:
-    description: Commands to manage your event capsluetoy
+  omikujicapsuletoy:
+    description: Commands to manage your event capsuletoy
     usage: |
-      Use /help omikujicapsluetoy [subcommand] for more information
-      /<command> list - List all capsluetoy
-      /<command> modify <capsluetoy_name> - Modify a capsluetoy
-      /<command> delete <capsluetoy_name> - Delete a capsluetoy
+      Use /help omikujicapsuletoy [subcommand] for more information
+      /<command> list - List all capsuletoy
+      /<command> modify <capsuletoy_name> - Modify a capsuletoy
+      /<command> delete <capsuletoy_name> - Delete a capsuletoy
       /<command> ticket <player_name> - Issue a ticket
-  omikujicapsluetoy list:
-    description: List all capsluetoy
+  omikujicapsuletoy list:
+    description: List all capsuletoy
     usage: /<command> list
-  omikujicapsluetoy modify:
-    description: Modify a capsluetoy chest
-    usage: /<command> modify <capsluetoy_name>
-  omikujicapsluetoy delete:
-    description: Delete a capsluetoy
-    usage: /<command> delete <capsluetoy_name>
-  omikujicapsluetoy ticket:
+  omikujicapsuletoy modify:
+    description: Modify a capsuletoy chest
+    usage: /<command> modify <capsuletoy_name>
+  omikujicapsuletoy delete:
+    description: Delete a capsuletoy
+    usage: /<command> delete <capsuletoy_name>
+  omikujicapsuletoy ticket:
     description: Issue a ticket
     usage: /<command> ticket <player_name>

@@ -1,4 +1,4 @@
-package space.gorogoro.omikujicapsluetoy;
+package space.gorogoro.omikujicapsuletoy;
 
 import java.io.File;
 import java.sql.Connection;
@@ -16,24 +16,24 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 
 /*
- * OmikujiCapslueToyDatabase
+ * OmikujiCapsuleToyDatabase
  * @license    GPLv3
  * @copyright  Copyright gorogoro.space 2021
  * @author     kubotan
  * @see        <a href="https://gorogoro.space">gorogoro.space</a>
  */
-public class OmikujiCapslueToyDatabase {
-  private OmikujiCapslueToy capsluetoy;
+public class OmikujiCapsuleToyDatabase {
+  private OmikujiCapsuleToy capsuletoy;
   private Connection con;
-  private List<String> listCapslueToySignCache = new ArrayList<String>();
+  private List<String> listCapsuleToySignCache = new ArrayList<String>();
   private long expireCache;
 
   /**
-   * Constructor of CapslueToyDatabase.
-   * @param OmikujiCapslueToy CapslueToy
+   * Constructor of CapsuleToyDatabase.
+   * @param OmikujiCapsuleToy CapsuleToy
    */
-  public OmikujiCapslueToyDatabase(OmikujiCapslueToy capsluetoy) {
-    this.capsluetoy = capsluetoy;
+  public OmikujiCapsuleToyDatabase(OmikujiCapsuleToy capsuletoy) {
+    this.capsuletoy = capsuletoy;
   }
 
   /**
@@ -43,18 +43,18 @@ public class OmikujiCapslueToyDatabase {
   private Connection getCon(){
     try{
       // Create database folder.
-      if(!capsluetoy.getDataFolder().exists()){
-        capsluetoy.getDataFolder().mkdir();
+      if(!capsuletoy.getDataFolder().exists()){
+        capsuletoy.getDataFolder().mkdir();
       }
       if(con == null) {
         // Select JDBC driver.
         Class.forName("org.sqlite.JDBC");
-        String url = "jdbc:sqlite:" + capsluetoy.getDataFolder() + File.separator + "sqlite.db";
+        String url = "jdbc:sqlite:" + capsuletoy.getDataFolder() + File.separator + "sqlite.db";
         con = DriverManager.getConnection(url);
         con.setAutoCommit(true);
       }
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
       closeCon(con);
     }
     return con;
@@ -69,10 +69,10 @@ public class OmikujiCapslueToyDatabase {
     try{
       if(stmt == null) {
         stmt = getCon().createStatement();
-        stmt.setQueryTimeout(capsluetoy.getConfig().getInt("query-timeout"));
+        stmt.setQueryTimeout(capsuletoy.getConfig().getInt("query-timeout"));
       }
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
     return stmt;
   }
@@ -87,7 +87,7 @@ public class OmikujiCapslueToyDatabase {
         con.close();
       }
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -101,7 +101,7 @@ public class OmikujiCapslueToyDatabase {
         rs.close();
       }
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -115,7 +115,7 @@ public class OmikujiCapslueToyDatabase {
         stmt.close();
       }
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -129,7 +129,7 @@ public class OmikujiCapslueToyDatabase {
         prepStmt.close();
       }
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -139,10 +139,10 @@ public class OmikujiCapslueToyDatabase {
   public void finalize() {
     try{
       closeCon(getCon());
-      listCapslueToySignCache  = new ArrayList<String>();
+      listCapsuleToySignCache  = new ArrayList<String>();
       expireCache = System.currentTimeMillis();
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -155,11 +155,13 @@ public class OmikujiCapslueToyDatabase {
     try{
       stmt = getStmt();
 
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS capsluetoy ("
+      migrateMisspelledNames(stmt);
+
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS capsuletoy ("
         + "  id INTEGER PRIMARY KEY AUTOINCREMENT"
-        + "  ,capsluetoy_name STRING NOT NULL"
-        + "  ,capsluetoy_display_name STRING NOT NULL"
-        + "  ,capsluetoy_detail STRING NOT NULL"
+        + "  ,capsuletoy_name STRING NOT NULL"
+        + "  ,capsuletoy_display_name STRING NOT NULL"
+        + "  ,capsuletoy_detail STRING NOT NULL"
         + "  ,world_name STRING NOT NULL"
         + "  ,sign_x INTEGER NOT NULL"
         + "  ,sign_y INTEGER NOT NULL"
@@ -171,7 +173,7 @@ public class OmikujiCapslueToyDatabase {
         + "  ,created_at DATETIME NOT NULL DEFAULT (datetime('now','localtime')) CHECK(created_at LIKE '____-__-__ __:__:__')"
         + ");"
       );
-      stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS capsluetoy_name_uindex ON capsluetoy (capsluetoy_name);");
+      stmt.executeUpdate("CREATE UNIQUE INDEX IF NOT EXISTS capsuletoy_name_uindex ON capsuletoy (capsuletoy_name);");
 
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticket ("
         + "  id INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -186,10 +188,51 @@ public class OmikujiCapslueToyDatabase {
       refreshCache();
 
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     } finally {
       closeRs(rs);
       closeStmt(stmt);
+    }
+  }
+
+  /**
+   * 1.x の綴り(capsluetoy)の表・列・索引を、2.0 の綴り(capsuletoy)に変える。
+   * 新しい表がすでにあるときは何もしない。
+   * @param Statement Statement
+   */
+  private void migrateMisspelledNames(Statement stmt) throws SQLException {
+    if(!existsTable(stmt, "capsluetoy") || existsTable(stmt, "capsuletoy")) {
+      return;
+    }
+
+    Connection c = getCon();
+    c.setAutoCommit(false);
+    try {
+      stmt.executeUpdate("ALTER TABLE capsluetoy RENAME TO capsuletoy;");
+      stmt.executeUpdate("ALTER TABLE capsuletoy RENAME COLUMN capsluetoy_name TO capsuletoy_name;");
+      stmt.executeUpdate("ALTER TABLE capsuletoy RENAME COLUMN capsluetoy_display_name TO capsuletoy_display_name;");
+      stmt.executeUpdate("ALTER TABLE capsuletoy RENAME COLUMN capsluetoy_detail TO capsuletoy_detail;");
+      // 索引は呼び出し元で capsuletoy_name_uindex として作り直す
+      stmt.executeUpdate("DROP INDEX IF EXISTS capsluetoy_name_uindex;");
+      c.commit();
+      capsuletoy.getLogger().info("Renamed the database table capsluetoy to capsuletoy.");
+    } catch (SQLException e) {
+      c.rollback();
+      throw e;
+    } finally {
+      c.setAutoCommit(true);
+    }
+  }
+
+  /**
+   * Determine whether the table exists.
+   * @param Statement Statement
+   * @param String table name
+   * @return boolean true:exists false:not exists
+   */
+  private static boolean existsTable(Statement stmt, String tableName) throws SQLException {
+    try (ResultSet rs = stmt.executeQuery("SELECT 1 FROM sqlite_master WHERE type='table' AND name='" + tableName + "'")) {
+      return rs.next();
     }
   }
 
@@ -203,7 +246,7 @@ public class OmikujiCapslueToyDatabase {
     List<String> ret = new ArrayList<String>();
     try {
       prepStmt = getCon().prepareStatement("SELECT"
-        + "  capsluetoy_name "
+        + "  capsuletoy_name "
         + "  ,world_name "
         + "  ,sign_x "
         + "  ,sign_y "
@@ -212,7 +255,7 @@ public class OmikujiCapslueToyDatabase {
         + "  ,chest_y "
         + "  ,chest_z "
         + "FROM"
-        + "  capsluetoy "
+        + "  capsuletoy "
         + "ORDER BY"
         + "  id DESC"
         );
@@ -220,7 +263,7 @@ public class OmikujiCapslueToyDatabase {
       while(rs.next()){
         ret.add(
           String.format(
-            "capsluetoy_name:%s world:%s sign[x,y,z]:%d,%d,%d chest[x,y,z]:%d,%d,%d"
+            "capsuletoy_name:%s world:%s sign[x,y,z]:%d,%d,%d chest[x,y,z]:%d,%d,%d"
             ,rs.getString(1)
             ,rs.getString(2)
             ,rs.getInt(3)
@@ -235,7 +278,7 @@ public class OmikujiCapslueToyDatabase {
       closeRs(rs);
       closePrepStmt(prepStmt);
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     } finally {
       closeRs(rs);
       closePrepStmt(prepStmt);
@@ -244,61 +287,61 @@ public class OmikujiCapslueToyDatabase {
   }
 
   /**
-   * Delete CapslueToy
-   * @param String capslueToyName
+   * Delete CapsuleToy
+   * @param String capsuleToyName
    * @return boolean true:Success false:Failure
    */
-  public boolean deleteCapslueToy(String capslueToyName) {
+  public boolean deleteCapsuleToy(String capsuleToyName) {
     PreparedStatement prepStmt = null;
     try {
-      prepStmt = getCon().prepareStatement("DELETE FROM capsluetoy WHERE capsluetoy_name = ?;");
-      prepStmt.setString(1, capslueToyName);
+      prepStmt = getCon().prepareStatement("DELETE FROM capsuletoy WHERE capsuletoy_name = ?;");
+      prepStmt.setString(1, capsuleToyName);
       prepStmt.addBatch();
       prepStmt.executeBatch();
       closePrepStmt(prepStmt);
       refreshCache();
 
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
       return false;
     }
     return true;
   }
 
   /**
-   * Get CapslueToy id
-   * @param String capslueToyName
-   * @return Integer|null CapslueToy id.
+   * Get CapsuleToy id
+   * @param String capsuleToyName
+   * @return Integer|null CapsuleToy id.
    */
-  public Integer getCapslueToy(String capslueToyName){
+  public Integer getCapsuleToy(String capsuleToyName){
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    Integer capslueToyId = null;
+    Integer capsuleToyId = null;
     try {
-      prepStmt = getCon().prepareStatement("SELECT id FROM capsluetoy WHERE capsluetoy_name=?");
-      prepStmt.setString(1, capslueToyName);
+      prepStmt = getCon().prepareStatement("SELECT id FROM capsuletoy WHERE capsuletoy_name=?");
+      prepStmt.setString(1, capsuleToyName);
       rs = prepStmt.executeQuery();
       while(rs.next()){
-        capslueToyId = rs.getInt(1);
+        capsuleToyId = rs.getInt(1);
       }
       closeRs(rs);
       closePrepStmt(prepStmt);
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
-    return capslueToyId;
+    return capsuleToyId;
   }
 
   /**
-   * Get CapslueToy chest
+   * Get CapsuleToy chest
    * @param Location signLoc
-   * @return Chest|null CapslueToy chest.
+   * @return Chest|null CapsuleToy chest.
    */
-  public Chest getCapslueToyChest(Location signLoc){
+  public Chest getCapsuleToyChest(Location signLoc){
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      prepStmt = getCon().prepareStatement("SELECT world_name, chest_x, chest_y, chest_z FROM capsluetoy WHERE world_name=? AND sign_x=? AND sign_y=? AND sign_z=?");
+      prepStmt = getCon().prepareStatement("SELECT world_name, chest_x, chest_y, chest_z FROM capsuletoy WHERE world_name=? AND sign_x=? AND sign_y=? AND sign_z=?");
       prepStmt.setString(1, signLoc.getWorld().getName());
       prepStmt.setInt(2, signLoc.getBlockX());
       prepStmt.setInt(3, signLoc.getBlockY());
@@ -331,43 +374,43 @@ public class OmikujiCapslueToyDatabase {
         return null;
       }
 
-      Block b = new Location(capsluetoy.getServer().getWorld(worldName), chestX, chestY, chestZ).getBlock();
+      Block b = new Location(capsuletoy.getServer().getWorld(worldName), chestX, chestY, chestZ).getBlock();
       if(!b.getType().equals(Material.CHEST)) {
         return null;
       }
 
       return (Chest)b.getState();
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
     return null;
   }
 
   /**
-   * Get CapslueToy id
+   * Get CapsuleToy id
    * @param Location loc
-   * @return Integer|null CapslueToy id.
+   * @return Integer|null CapsuleToy id.
    */
-  public boolean isCapslueToy(Location loc){
+  public boolean isCapsuleToy(Location loc){
     try {
       boolean cacheClear = false;
       if(expireCache > System.currentTimeMillis()) {
         cacheClear = true;
       }
-      return isCapslueToy(loc, cacheClear);
+      return isCapsuleToy(loc, cacheClear);
     } catch (Exception e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
     return false;
   }
 
   /**
-   * Get CapslueToy id
+   * Get CapsuleToy id
    * @param Location loc
    * @param boolean cacheClear
-   * @return Integer|null CapslueToy id.
+   * @return Integer|null CapsuleToy id.
    */
-  public boolean isCapslueToy(Location loc, boolean cacheClear){
+  public boolean isCapsuleToy(Location loc, boolean cacheClear){
     try {
       if( cacheClear ) {
         refreshCache();
@@ -379,13 +422,13 @@ public class OmikujiCapslueToyDatabase {
         ,String.valueOf(loc.getBlockY())
         ,String.valueOf(loc.getBlockZ())
       );
-      if(listCapslueToySignCache.contains(searchIndex)) {
+      if(listCapsuleToySignCache.contains(searchIndex)) {
         // no database & cache hit.
         return true;
       }
 
     } catch (Exception e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
     return false;
   }
@@ -396,10 +439,10 @@ public class OmikujiCapslueToyDatabase {
    */
   public boolean refreshCache(){
     try {
-      PreparedStatement prepStmt = getCon().prepareStatement("SELECT world_name, sign_x, sign_y, sign_z FROM capsluetoy");
+      PreparedStatement prepStmt = getCon().prepareStatement("SELECT world_name, sign_x, sign_y, sign_z FROM capsuletoy");
       ResultSet rs = prepStmt.executeQuery();
       String cacheIndex;
-      listCapslueToySignCache.clear();
+      listCapsuleToySignCache.clear();
       while(rs.next()){
         cacheIndex = String.join(
           "_"
@@ -408,50 +451,50 @@ public class OmikujiCapslueToyDatabase {
           ,String.valueOf(rs.getInt(3))
           ,String.valueOf(rs.getInt(4))
         );
-        listCapslueToySignCache.add(cacheIndex);
+        listCapsuleToySignCache.add(cacheIndex);
       }
-      expireCache = System.currentTimeMillis() + (capsluetoy.getConfig().getInt("cache-expire-seconds") * 1000);
+      expireCache = System.currentTimeMillis() + (capsuletoy.getConfig().getInt("cache-expire-seconds") * 1000);
       closeRs(rs);
       closePrepStmt(prepStmt);
       return true;
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
     return false;
   }
 
   /**
-   * Get CapslueToy
-   * @param String capslueToyName
-   * @param String CapslueToyDisplayNam
-   * @param String capslueToyDetail
+   * Get CapsuleToy
+   * @param String capsuleToyName
+   * @param String capsuleToyDisplayName
+   * @param String capsuleToyDetail
    * @param Integer worldId
    * @param Integer sign_x
    * @param Integer sign_y
    * @param Integer sign_z
-   * @return Integer CapslueToy id.
+   * @return Integer CapsuleToy id.
    */
-  public Integer getCapslueToy(String capslueToyName, String capslueToyDisplayName, String capslueToyDetail, String worldName, Integer signX, Integer signY, Integer signZ){
+  public Integer getCapsuleToy(String capsuleToyName, String capsuleToyDisplayName, String capsuleToyDetail, String worldName, Integer signX, Integer signY, Integer signZ){
     PreparedStatement prepStmt = null;
-    Integer capslueToyId = null;
+    Integer capsuleToyId = null;
     try {
-      capslueToyId = getCapslueToy(capslueToyName);
-      if(capslueToyId != null){
-        return capslueToyId;
+      capsuleToyId = getCapsuleToy(capsuleToyName);
+      if(capsuleToyId != null){
+        return capsuleToyId;
       }
 
-      prepStmt = getCon().prepareStatement("INSERT INTO capsluetoy("
-        + "  capsluetoy_name"
-        + ", capsluetoy_display_name"
-        + ", capsluetoy_detail"
+      prepStmt = getCon().prepareStatement("INSERT INTO capsuletoy("
+        + "  capsuletoy_name"
+        + ", capsuletoy_display_name"
+        + ", capsuletoy_detail"
         + ", world_name"
         + ", sign_x"
         + ", sign_y"
         + ", sign_z"
         + ") VALUES (?,?,?,?,?,?,?)");
-      prepStmt.setString(1, capslueToyName);
-      prepStmt.setString(2, capslueToyDisplayName);
-      prepStmt.setString(3, capslueToyDetail);
+      prepStmt.setString(1, capsuleToyName);
+      prepStmt.setString(2, capsuleToyDisplayName);
+      prepStmt.setString(3, capsuleToyDetail);
       prepStmt.setString(4, worldName);
       prepStmt.setInt(5, signX);
       prepStmt.setInt(6, signY);
@@ -460,43 +503,43 @@ public class OmikujiCapslueToyDatabase {
       prepStmt.executeBatch();
       closePrepStmt(prepStmt);
       refreshCache();
-      capslueToyId = getCapslueToy(capslueToyName);
+      capsuleToyId = getCapsuleToy(capsuleToyName);
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     } finally {
       closePrepStmt(prepStmt);
     }
-    return capslueToyId;
+    return capsuleToyId;
   }
 
   /**
-   * Update CapslueToy chest
-   * @param capslueToyName
+   * Update CapsuleToy chest
+   * @param capsuleToyName
    * @param Integer chestX
    * @param Integer chestY
    * @param Integer chestZ
-   * @return Integer CapslueToy id.
+   * @return Integer CapsuleToy id.
    */
-  public boolean updateCapslueToyChest(String capslueToyName, Integer chestX, Integer chestY, Integer chestZ){
+  public boolean updateCapsuleToyChest(String capsuleToyName, Integer chestX, Integer chestY, Integer chestZ){
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      Integer capslueToyId = getCapslueToy(capslueToyName);
-      if(capslueToyId == null){
+      Integer capsuleToyId = getCapsuleToy(capsuleToyName);
+      if(capsuleToyId == null){
         return false;
       }
 
-      prepStmt = getCon().prepareStatement("UPDATE capsluetoy SET chest_x = ?, chest_y = ?, chest_z = ? WHERE capsluetoy_name = ?;");
+      prepStmt = getCon().prepareStatement("UPDATE capsuletoy SET chest_x = ?, chest_y = ?, chest_z = ? WHERE capsuletoy_name = ?;");
       prepStmt.setInt(1, chestX);
       prepStmt.setInt(2, chestY);
       prepStmt.setInt(3, chestZ);
-      prepStmt.setString(4, capslueToyName);
+      prepStmt.setString(4, capsuleToyName);
       prepStmt.addBatch();
       prepStmt.executeBatch();
       closePrepStmt(prepStmt);
       return true;
     } catch (SQLException e) {
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     } finally {
       closeRs(rs);
       closePrepStmt(prepStmt);

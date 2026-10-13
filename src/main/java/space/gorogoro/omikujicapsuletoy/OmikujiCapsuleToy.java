@@ -1,4 +1,4 @@
-package space.gorogoro.omikujicapsluetoy;
+package space.gorogoro.omikujicapsuletoy;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -13,35 +13,35 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /*
- * OmikujiCapslueToy
+ * OmikujiCapsuleToy
  * @license    GPLv3
  * @copyright  Copyright gorogoro.space 2021
  * @author     kubotan
  * @see        <a href="https://gorogoro.space">gorogoro.space</a>
  */
-public class OmikujiCapslueToy extends JavaPlugin{
-  private OmikujiCapslueToyDatabase database;
-  private OmikujiCapslueToyCommand command;
-  private OmikujiCapslueToyListener listener;
+public class OmikujiCapsuleToy extends JavaPlugin{
+  private OmikujiCapsuleToyDatabase database;
+  private OmikujiCapsuleToyCommand command;
+  private OmikujiCapsuleToyListener listener;
 
   /**
-   * Get OmikujiCapslueToyDatabase instance.
+   * Get OmikujiCapsuleToyDatabase instance.
    */
-  public OmikujiCapslueToyDatabase getDatabase() {
+  public OmikujiCapsuleToyDatabase getDatabase() {
     return database;
   }
 
   /**
-   * Get OmikujiCapslueToyCommand instance.
+   * Get OmikujiCapsuleToyCommand instance.
    */
-  public OmikujiCapslueToyCommand getCommand() {
+  public OmikujiCapsuleToyCommand getCommand() {
     return command;
   }
 
   /**
-   * Get OmikujiCapslueToyListener instance.
+   * Get OmikujiCapsuleToyListener instance.
    */
-  public OmikujiCapslueToyListener getListener() {
+  public OmikujiCapsuleToyListener getListener() {
     return listener;
   }
 
@@ -64,20 +64,20 @@ public class OmikujiCapslueToy extends JavaPlugin{
       }
 
       // Initialize the database.
-      database = new OmikujiCapslueToyDatabase(this);
+      database = new OmikujiCapsuleToyDatabase(this);
       database.initialize();
 
       // Register event listener.
       PluginManager pm = getServer().getPluginManager();
       HandlerList.unregisterAll(this);    // clean up
-      listener = new OmikujiCapslueToyListener(this);
+      listener = new OmikujiCapsuleToyListener(this);
       pm.registerEvents(listener, this);
 
-      // Instance prepared of CapslueToyCommand.
-      command = new OmikujiCapslueToyCommand(this);
+      // Instance prepared of CapsuleToyCommand.
+      command = new OmikujiCapsuleToyCommand(this);
 
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -87,73 +87,73 @@ public class OmikujiCapslueToy extends JavaPlugin{
    * @return boolean true:Success false:Display the usage dialog set in plugin.yml
    */
   public boolean onCommand( CommandSender sender, Command commandInfo, String label, String[] args) {
-    boolean hideUseageFlag = true;  // true:Success false:Display the usage dialog set in plugin.yml
+    boolean hideUsageFlag = true;  // true:Success false:Display the usage dialog set in plugin.yml
     try{
-      if(!commandInfo.getName().equals("omikujicapsluetoy")) {
-        return hideUseageFlag;
+      if(!commandInfo.getName().equals("omikujicapsuletoy")) {
+        return hideUsageFlag;
       }
 
       if(args.length <= 0) {
-        return hideUseageFlag;
+        return hideUsageFlag;
       }
       String subCommand = args[0];
 
       command.initialize(sender, args);
       switch(subCommand) {
         case "list":
-          if(sender.hasPermission("omikujicapsluetoy.list")) {
-            hideUseageFlag = command.list();
+          if(sender.hasPermission("omikujicapsuletoy.list")) {
+            hideUsageFlag = command.list();
           }
           break;
 
         case "modify":
-          if(sender.hasPermission("omikujicapsluetoy.modify")) {
-            hideUseageFlag = command.modify();
+          if(sender.hasPermission("omikujicapsuletoy.modify")) {
+            hideUsageFlag = command.modify();
           }
           break;
 
         case "delete":
-          if(sender.hasPermission("omikujicapsluetoy.delete")) {
-            hideUseageFlag = command.delete();
+          if(sender.hasPermission("omikujicapsuletoy.delete")) {
+            hideUsageFlag = command.delete();
           }
           break;
 
         case "ticket":
           if((sender instanceof BlockCommandSender) || (sender instanceof ConsoleCommandSender) || sender.isOp()) {
-            for(Player p:OmikujiCapslueToyUtility.getTarget(this, args[1], sender)) {  // @a @p @s @r or playername
+            for(Player p:OmikujiCapsuleToyUtility.getTarget(this, args[1], sender)) {  // @a @p @s @r or playername
               command.ticket(p);
             }
-            hideUseageFlag = true;
+            hideUsageFlag = true;
           }
           break;
 
         case "enable":
           if(sender.isOp()) {
-            hideUseageFlag = command.enable();
+            hideUsageFlag = command.enable();
           }
           break;
 
         case "reload":
           if(sender.isOp()) {
-            hideUseageFlag = command.reload();
+            hideUsageFlag = command.reload();
           }
           break;
 
         case "disable":
           if(sender.isOp()) {
-            hideUseageFlag = command.disable();
+            hideUsageFlag = command.disable();
           }
           break;
 
         default:
-          hideUseageFlag = false;
+          hideUsageFlag = false;
       }
     }catch(Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }finally{
       command.finalize();
     }
-    return hideUseageFlag;
+    return hideUsageFlag;
   }
 
   /**
@@ -170,7 +170,7 @@ public class OmikujiCapslueToy extends JavaPlugin{
 
       getLogger().log(Level.INFO, "The Plugin Has Been Disabled!");
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 }

@@ -1,4 +1,4 @@
-package space.gorogoro.omikujicapsluetoy;
+package space.gorogoro.omikujicapsuletoy;
 
 import java.util.List;
 import java.util.Random;
@@ -24,23 +24,23 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /*
- * OmikujiCapslueToyListener
+ * OmikujiCapsuleToyListener
  * @license    GPLv3
  * @copyright  Copyright gorogoro.space 2021
  * @author     kubotan
  * @see        <a href="https://gorogoro.space">gorogoro.space</a>
  */
-public class OmikujiCapslueToyListener implements Listener{
-  private OmikujiCapslueToy capsluetoy;
+public class OmikujiCapsuleToyListener implements Listener{
+  private OmikujiCapsuleToy capsuletoy;
 
   /**
-   * Constructor of OmikujiCapslueToyListener.
+   * Constructor of OmikujiCapsuleToyListener.
    */
-  public OmikujiCapslueToyListener(OmikujiCapslueToy capsluetoy) {
+  public OmikujiCapsuleToyListener(OmikujiCapsuleToy capsuletoy) {
     try{
-      this.capsluetoy = capsluetoy;
+      this.capsuletoy = capsuletoy;
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -51,48 +51,48 @@ public class OmikujiCapslueToyListener implements Listener{
   @EventHandler(priority=EventPriority.HIGHEST)
   public void onSignChange(SignChangeEvent event) {
     try {
-      if(!event.getLine(0).toLowerCase().equals("[omikujicapsluetoy]")) {
+      if(!event.getLine(0).toLowerCase().equals("[omikujicapsuletoy]")) {
         return;
       }
 
-      if(!event.getPlayer().hasPermission("omikujicapsluetoy.create")) {
+      if(!event.getPlayer().hasPermission("omikujicapsuletoy.create")) {
         return;
       }
 
       Location signLoc = event.getBlock().getLocation();
-      if(capsluetoy.getDatabase().isCapslueToy(signLoc)) {
+      if(capsuletoy.getDatabase().isCapsuleToy(signLoc)) {
         event.setCancelled(true);
-        OmikujiCapslueToyUtility.sendMessage(event.getPlayer(), "It is already registered. To continue, please delete first.");
+        OmikujiCapsuleToyUtility.sendMessage(event.getPlayer(), "It is already registered. To continue, please delete first.");
         return;
       }
 
-      String capslueToyName = event.getLine(1);
-      String capslueToyDisplayName = event.getLine(2);
-      String capslueToyDetail = event.getLine(3);
+      String capsuleToyName = event.getLine(1);
+      String capsuleToyDisplayName = event.getLine(2);
+      String capsuleToyDetail = event.getLine(3);
       String worldName = signLoc.getWorld().getName();
       Integer x = signLoc.getBlockX();
       Integer y = signLoc.getBlockY();
       Integer z = signLoc.getBlockZ();
       Pattern p = Pattern.compile("^[0-9a-zA-Z_]+$");
-      if(!p.matcher(capslueToyName).find()) {
+      if(!p.matcher(capsuleToyName).find()) {
         event.setCancelled(true);
-        OmikujiCapslueToyUtility.sendMessage(event.getPlayer(), "Please enter the second line of the signboard with one-byte alphanumeric underscore.");
+        OmikujiCapsuleToyUtility.sendMessage(event.getPlayer(), "Please enter the second line of the signboard with one-byte alphanumeric underscore.");
         return;
       }
 
-      Integer capslueToyId = capsluetoy.getDatabase().getCapslueToy(capslueToyName, capslueToyDisplayName, capslueToyDetail, worldName, x, y, z);
-      if(capslueToyId == null) {
+      Integer capsuleToyId = capsuletoy.getDatabase().getCapsuleToy(capsuleToyName, capsuleToyDisplayName, capsuleToyDetail, worldName, x, y, z);
+      if(capsuleToyId == null) {
         event.setCancelled(true);
-        throw new Exception("Can not get CapslueToy. CapslueToyName=" + capslueToyName);
+        throw new Exception("Can not get CapsuleToy. CapsuleToyName=" + capsuleToyName);
       }
 
-      event.setLine(0, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("sign-line1-prefix") + capslueToyDisplayName));
-      event.setLine(1, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("sign-line2-prefix") + capslueToyDetail));
-      event.setLine(2, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("sign-line3")));
-      event.setLine(3, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("sign-line4")));
+      event.setLine(0, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line1-prefix") + capsuleToyDisplayName));
+      event.setLine(1, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line2-prefix") + capsuleToyDetail));
+      event.setLine(2, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line3")));
+      event.setLine(3, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("sign-line4")));
 
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -124,34 +124,34 @@ public class OmikujiCapslueToyListener implements Listener{
       Player p = event.getPlayer();
 
       Location signLoc = sign.getLocation();
-      if(!capsluetoy.getDatabase().isCapslueToy(signLoc)) {
+      if(!capsuletoy.getDatabase().isCapsuleToy(signLoc)) {
         return;
       }
       event.setCancelled(true);
 
       ItemStack ticket = p.getInventory().getItemInMainHand();
       if( !ticket.getType().equals(Material.PAPER) ) {
-        OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("hold-the-ticket")));
+        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("hold-the-ticket")));
         return;
       }
 
       List<String> lores = ticket.getItemMeta().getLore();
       if( lores.size() != 3) {
-        OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("hold-the-ticket")));
+        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("hold-the-ticket")));
         return;
       }
 
 
-      capsluetoy.getCommand();
-      if(!lores.get(2).contains(OmikujiCapslueToyCommand.EVENT_OMIKUJI_CODE)) {
-        OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("not-found-ticket-code")));
+      capsuletoy.getCommand();
+      if(!lores.get(2).contains(OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE)) {
+        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-ticket-code")));
         return;
       }
 
-      Chest chest = capsluetoy.getDatabase().getCapslueToyChest(signLoc);
+      Chest chest = capsuletoy.getDatabase().getCapsuleToyChest(signLoc);
       if(chest == null) {
-        OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("not-found-chest1")));
-        OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("not-found-chest2")));
+        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-chest1")));
+        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-chest2")));
         return;
       }
 
@@ -161,16 +161,16 @@ public class OmikujiCapslueToyListener implements Listener{
       int pick = new Random().nextInt(iv.getSize());
       ItemStack pickItem = iv.getItem(pick);
       if(pickItem == null) {
-        OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("not-found-pick")));
+        OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("not-found-pick")));
         return;
       }
 
       ItemStack sendItem = pickItem.clone();
       p.getInventory().addItem(sendItem);
-      OmikujiCapslueToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("found-pick")));
+      OmikujiCapsuleToyUtility.sendMessage(p, ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("found-pick")));
 
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -189,26 +189,26 @@ public class OmikujiCapslueToyListener implements Listener{
         return;
       }
 
-      if(!OmikujiCapslueToyUtility.isInPunch(p)) {
+      if(!OmikujiCapsuleToyUtility.isInPunch(p)) {
         return;
       } else {
         event.setCancelled(true);
       }
 
-      String capslueToyName = OmikujiCapslueToyUtility.getcapslueToyNameInPunch(p);
-      OmikujiCapslueToyUtility.removePunch(p, capsluetoy);
-      if(capslueToyName == null) {
+      String capsuleToyName = OmikujiCapsuleToyUtility.getCapsuleToyNameInPunch(p);
+      OmikujiCapsuleToyUtility.removePunch(p, capsuletoy);
+      if(capsuleToyName == null) {
         return;
       }
 
       Location loc = event.getClickedBlock().getLocation();
-      if(capsluetoy.getDatabase().updateCapslueToyChest(capslueToyName, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())) {
-        OmikujiCapslueToyUtility.sendMessage(p, "Updated. capsluetoy_name=" + capslueToyName);
+      if(capsuletoy.getDatabase().updateCapsuleToyChest(capsuleToyName, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())) {
+        OmikujiCapsuleToyUtility.sendMessage(p, "Updated. capsuletoy_name=" + capsuleToyName);
         return;
       }
 
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 }

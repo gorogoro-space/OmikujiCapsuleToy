@@ -1,4 +1,4 @@
-package space.gorogoro.omikujicapsluetoy;
+package space.gorogoro.omikujicapsuletoy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,29 +11,29 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /*
- * OmikujiCapslueToyCommand
+ * OmikujiCapsuleToyCommand
  * @license    GPLv3
  * @copyright  Copyright gorogoro.space 2021
  * @author     kubotan
  * @see        <a href="https://gorogoro.space">gorogoro.space</a>
  */
-public class OmikujiCapslueToyCommand {
-  private OmikujiCapslueToy capsluetoy;
+public class OmikujiCapsuleToyCommand {
+  private OmikujiCapsuleToy capsuletoy;
   private CommandSender sender;
   private String[] args;
-  protected static final String META_CHEST = "omikujicapsluetoy.chest";
+  protected static final String META_CHEST = "omikujicapsuletoy.chest";
   protected static final String FORMAT_TICKET_CODE = "EVENT CODE:%s";
   protected static final String EVENT_OMIKUJI_CODE = "2bCq4f7lUy";
 
   /**
-   * Constructor of CapslueToyCommand.
-   * @param OmikujiCapslueToy CapslueToy
+   * Constructor of CapsuleToyCommand.
+   * @param OmikujiCapsuleToy CapsuleToy
    */
-  public OmikujiCapslueToyCommand(OmikujiCapslueToy capsluetoy) {
+  public OmikujiCapsuleToyCommand(OmikujiCapsuleToy capsuletoy) {
     try{
-      this.capsluetoy = capsluetoy;
+      this.capsuletoy = capsuletoy;
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -47,7 +47,7 @@ public class OmikujiCapslueToyCommand {
       this.sender = sender;
       this.args = args;
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -59,7 +59,7 @@ public class OmikujiCapslueToyCommand {
       this.sender = null;
       this.args = null;
     } catch (Exception e){
-      OmikujiCapslueToyUtility.logStackTrace(e);
+      OmikujiCapsuleToyUtility.logStackTrace(e);
     }
   }
 
@@ -68,14 +68,14 @@ public class OmikujiCapslueToyCommand {
    * @return boolean true:Success false:Failure
    */
   public boolean list() {
-    List<String> glist = capsluetoy.getDatabase().list();
+    List<String> glist = capsuletoy.getDatabase().list();
     if(glist.size() <= 0) {
-      OmikujiCapslueToyUtility.sendMessage(sender, "Record not found.");
+      OmikujiCapsuleToyUtility.sendMessage(sender, "Record not found.");
       return true;
     }
 
     for(String msg: glist) {
-      OmikujiCapslueToyUtility.sendMessage(sender, msg);
+      OmikujiCapsuleToyUtility.sendMessage(sender, msg);
     }
     return true;
   }
@@ -93,13 +93,13 @@ public class OmikujiCapslueToyCommand {
       return false;
     }
 
-    String capslueToyName = args[1];
-    if(capsluetoy.getDatabase().getCapslueToy(capslueToyName) == null) {
-      OmikujiCapslueToyUtility.sendMessage(sender, "Record not found. capsluetoy_name=" + capslueToyName);
+    String capsuleToyName = args[1];
+    if(capsuletoy.getDatabase().getCapsuleToy(capsuleToyName) == null) {
+      OmikujiCapsuleToyUtility.sendMessage(sender, "Record not found. capsuletoy_name=" + capsuleToyName);
       return true;
     }
-    OmikujiCapslueToyUtility.setPunch((Player)sender, capsluetoy, capslueToyName);
-    OmikujiCapslueToyUtility.sendMessage(sender, "Please punching(right click) a chest of CapslueToy. capsluetoy_name=" + capslueToyName);
+    OmikujiCapsuleToyUtility.setPunch((Player)sender, capsuletoy, capsuleToyName);
+    OmikujiCapsuleToyUtility.sendMessage(sender, "Please punching(right click) a chest of CapsuleToy. capsuletoy_name=" + capsuleToyName);
     return true;
   }
 
@@ -112,9 +112,9 @@ public class OmikujiCapslueToyCommand {
       return false;
     }
 
-    String capslueToyName = args[1];
-    if(capsluetoy.getDatabase().deleteCapslueToy(capslueToyName)) {
-      OmikujiCapslueToyUtility.sendMessage(sender, "Deleted. capsluetoy_name=" + capslueToyName);
+    String capsuleToyName = args[1];
+    if(capsuletoy.getDatabase().deleteCapsuleToy(capsuleToyName)) {
+      OmikujiCapsuleToyUtility.sendMessage(sender, "Deleted. capsuletoy_name=" + capsuleToyName);
       return true;
     }
     return false;
@@ -137,16 +137,16 @@ public class OmikujiCapslueToyCommand {
 
     ItemStack ticket = new ItemStack(Material.PAPER, 1);
     ItemMeta im = ticket.getItemMeta();
-    im.setDisplayName(ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("ticket-display-name")));
+    im.setDisplayName(ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("ticket-display-name")));
     ArrayList<String> lore = new ArrayList<String>();
-    lore.add(ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("ticket-lore1")));
-    lore.add(ChatColor.translateAlternateColorCodes('&', capsluetoy.getConfig().getString("ticket-lore2")));
+    lore.add(ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("ticket-lore1")));
+    lore.add(ChatColor.translateAlternateColorCodes('&', capsuletoy.getConfig().getString("ticket-lore2")));
     lore.add("スクラッチ:  " + ChatColor.RESET + ChatColor.MAGIC + EVENT_OMIKUJI_CODE + ChatColor.RESET);
     im.setLore(lore);
     ticket.setItemMeta(im);
     p.getInventory().setItem(emptySlot, ticket);
 
-    OmikujiCapslueToyUtility.sendMessage(sender, "Issue a ticket. player_name=" +  p.getDisplayName());
+    OmikujiCapsuleToyUtility.sendMessage(sender, "Issue a ticket. player_name=" +  p.getDisplayName());
     return true;
   }
 
@@ -155,8 +155,8 @@ public class OmikujiCapslueToyCommand {
    * @return boolean true:Success false:Failure
    */
   public boolean reload() {
-    capsluetoy.reloadConfig();
-    OmikujiCapslueToyUtility.sendMessage(sender, "reloaded.");
+    capsuletoy.reloadConfig();
+    OmikujiCapsuleToyUtility.sendMessage(sender, "reloaded.");
     return true;
   }
 
@@ -165,18 +165,18 @@ public class OmikujiCapslueToyCommand {
    * @return boolean true:Success false:Failure
    */
   public boolean enable() {
-    capsluetoy.onEnable();
-    OmikujiCapslueToyUtility.sendMessage(sender, "enabled.");
+    capsuletoy.onEnable();
+    OmikujiCapsuleToyUtility.sendMessage(sender, "enabled.");
     return true;
   }
 
   /**
-   * Processing of command fgdisable.
+   * Processing of command disable.
    * @return boolean true:Success false:Failure
    */
   public boolean disable() {
-    capsluetoy.onDisable();
-    OmikujiCapslueToyUtility.sendMessage(sender, "disabled.");
+    capsuletoy.onDisable();
+    OmikujiCapsuleToyUtility.sendMessage(sender, "disabled.");
     return true;
   }
 }

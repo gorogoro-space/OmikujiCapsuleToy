@@ -1,4 +1,4 @@
-package space.gorogoro.omikujicapsluetoy;
+package space.gorogoro.omikujicapsuletoy;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,13 +17,13 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 /*
- * OmikujiCapslueToyUtility
+ * OmikujiCapsuleToyUtility
  * @license    GPLv3
  * @copyright  Copyright gorogoro.space 2021
  * @author     kubotan
  * @see        <a href="https://gorogoro.space">gorogoro.space</a>
  */
-public class OmikujiCapslueToyUtility {
+public class OmikujiCapsuleToyUtility {
 
   protected static final String NUMALPHA = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -45,19 +45,19 @@ public class OmikujiCapslueToyUtility {
    * @return boolean true:That's right false:That's not it
    */
   public static boolean isInPunch(Player player){
-    if( player.hasMetadata(OmikujiCapslueToyCommand.META_CHEST)){
+    if( player.hasMetadata(OmikujiCapsuleToyCommand.META_CHEST)){
       return true;
     }
     return false;
   }
 
   /**
-   * get CapslueToy name in punch.
+   * get CapsuleToy name in punch.
    * @param Player Player
-   * @return String CapslueToy name
+   * @return String CapsuleToy name
    */
-  public static String getcapslueToyNameInPunch(Player player){
-    for(MetadataValue mv:player.getMetadata(OmikujiCapslueToyCommand.META_CHEST)) {
+  public static String getCapsuleToyNameInPunch(Player player){
+    for(MetadataValue mv:player.getMetadata(OmikujiCapsuleToyCommand.META_CHEST)) {
       return mv.asString();
     }
     return null;
@@ -66,21 +66,21 @@ public class OmikujiCapslueToyUtility {
   /**
    * Set punch processing.
    * @param Player Player
-   * @param OmikujiCapslueToy capsluetoy
-   * @param String CapslueToy Name
+   * @param OmikujiCapsuleToy capsuletoy
+   * @param String CapsuleToy Name
    */
-  public static void setPunch(Player player, OmikujiCapslueToy capsluetoy, String capslueToyName){
-    removePunch(player, capsluetoy);
-    player.setMetadata(OmikujiCapslueToyCommand.META_CHEST, new FixedMetadataValue(capsluetoy, capslueToyName));
+  public static void setPunch(Player player, OmikujiCapsuleToy capsuletoy, String capsuleToyName){
+    removePunch(player, capsuletoy);
+    player.setMetadata(OmikujiCapsuleToyCommand.META_CHEST, new FixedMetadataValue(capsuletoy, capsuleToyName));
   }
 
   /**
    * Remove punch processing.
    * @param Player Player
-   * @param OmikujiCapslueToy capsluetoy
+   * @param OmikujiCapsuleToy capsuletoy
    */
-  public static void removePunch(Player player, OmikujiCapslueToy capsluetoy){
-    player.removeMetadata(OmikujiCapslueToyCommand.META_CHEST, capsluetoy);
+  public static void removePunch(Player player, OmikujiCapsuleToy capsuletoy){
+    player.removeMetadata(OmikujiCapsuleToyCommand.META_CHEST, capsuletoy);
   }
 
   /**
@@ -89,7 +89,7 @@ public class OmikujiCapslueToyUtility {
    * @param String message
    */
   public static void sendMessage(CommandSender sender, String message){
-    sender.sendMessage((Object)ChatColor.DARK_RED + "[OmikujiCapslueToy]" + " " + (Object)ChatColor.RED + message);
+    sender.sendMessage((Object)ChatColor.DARK_RED + "[OmikujiCapsuleToy]" + " " + (Object)ChatColor.RED + message);
   }
 
   /**
@@ -125,22 +125,22 @@ public class OmikujiCapslueToyUtility {
     );
   }
   
-  public static ArrayList<Player> getTarget(Plugin capsluetoy, String selector) {
-    return getTarget(capsluetoy, selector, null);
+  public static ArrayList<Player> getTarget(Plugin capsuletoy, String selector) {
+    return getTarget(capsuletoy, selector, null);
   }
 
-  public static ArrayList<Player> getTarget(Plugin capsluetoy, String selector, CommandSender sender) {
+  public static ArrayList<Player> getTarget(Plugin capsuletoy, String selector, CommandSender sender) {
 
     ArrayList<Player> list = new ArrayList<Player>();
     if(!selector.startsWith("@")) {
-      Player p = capsluetoy.getServer().getPlayer(selector);
+      Player p = capsuletoy.getServer().getPlayer(selector);
       if(p != null) {
         list.add(p);
       }
     } else {
       switch(selector) {
         case "@a":
-          list.addAll(capsluetoy.getServer().getOnlinePlayers());
+          list.addAll(capsuletoy.getServer().getOnlinePlayers());
           break;
 
         case "@p":
