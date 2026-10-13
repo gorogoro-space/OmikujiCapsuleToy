@@ -64,7 +64,7 @@
 
 - **起動時(`onEnable`)**: `config.yml` が無ければ jar 内のものを保存する。データベースの表を作り(1.x の名前なら直す)、看板のキャッシュを読み、リスナーを登録する
 - **看板の設置(`SignChangeEvent`)**: 1 行目が `[omikujicapsuletoy]`(大文字小文字は問わない)で、`omikujicapsuletoy.create` を持つときに登録する。2 行目が登録名(英数字と `_` だけ)、3 行目が表示名、4 行目が説明。登録後は `sign-line1-prefix` などの設定で看板の文字を書き換える。同じ場所に登録済みならキャンセルする
-- **看板の右クリック**: 登録済みの看板なら操作をキャンセルする。手に持った物が紙で、説明がちょうど 3 行あり(説明の無い紙も `hold-the-ticket`)、3 行目に固定の文字列(`OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE`)が含まれていれば引換券とみなす。違えば `hold-the-ticket` / `not-found-ticket-code`。チェストが無ければ `not-found-chest1`・`not-found-chest2`。使えたら券を 1 枚減らし、チェストの枠を 1 つランダムに選ぶ。空の枠ならハズレ(`not-found-pick`)。中身の複製を持ち物に入れて `found-pick`。入りきらなければ束ごと足元に落として `dropped-pick`(1.0 までは入りきらない分が消えていた)。チェストの中身は減らない
+- **看板の右クリック**: **壁に貼り付けた看板(`WallSign`)だけが対象。** 立て看板・吊り看板が反応しないのは仕様で、不具合ではない(`onPlayerInteract` の `data instanceof Sign` は常に偽だが、そのままにしている)。登録済みの看板なら操作をキャンセルする。手に持った物が紙で、説明がちょうど 3 行あり(説明の無い紙も `hold-the-ticket`)、3 行目に固定の文字列(`OmikujiCapsuleToyCommand.EVENT_OMIKUJI_CODE`)が含まれていれば引換券とみなす。違えば `hold-the-ticket` / `not-found-ticket-code`。チェストが無ければ `not-found-chest1`・`not-found-chest2`。使えたら券を 1 枚減らし、チェストの枠を 1 つランダムに選ぶ。空の枠ならハズレ(`not-found-pick`)。中身の複製を持ち物に入れて `found-pick`。入りきらなければ束ごと足元に落として `dropped-pick`(1.0 までは入りきらない分が消えていた)。チェストの中身は減らない
   - 券は番号を持たず、全員の券が同じ文字列で判定される。データベースでの使用済みの管理はしていない
 - **メッセージ**: `config.yml` に無いキー(1.0 の設定ファイルの `dropped-pick` など)は、jar 内の `config.yml` の文を使う
 - **チェストの右クリック**: `/omikujicapsuletoy modify <名前>` のあとだけ、そのチェストを景品のチェストとして登録する
