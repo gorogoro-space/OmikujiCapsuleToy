@@ -19,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 /*
@@ -244,5 +245,29 @@ public class OmikujiCapsuleToyUtility {
       }
     }
     return latestPlayer;
+  }
+
+  // 入る余地が束の個数以上あるときだけ持ち物へ入れる。足りなければ束ごと足元へ落とす
+  public static boolean giveOrDrop(Player player, ItemStack item) {
+    ItemStack clone = item.clone();
+    if (hasEnoughSpace(player, clone)) {
+      player.getInventory().addItem(clone);
+      return true;
+    }
+    player.getWorld().dropItemNaturally(player.getLocation(), clone);
+    return false;
+  }
+
+  public static boolean hasEnoughSpace(Player player, ItemStack item) {
+    int maxStack = item.getMaxStackSize();
+    int space = 0;
+    for (ItemStack invItem : player.getInventory().getStorageContents()) {
+      if (invItem == null) {
+        space += maxStack;
+      } else if (invItem.isSimilar(item)) {
+        space += maxStack - invItem.getAmount();
+      }
+    }
+    return space >= item.getAmount();
   }
 }

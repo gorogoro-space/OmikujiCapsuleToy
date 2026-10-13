@@ -167,9 +167,9 @@ public class OmikujiCapsuleToyListener implements Listener{
         return;
       }
 
-      ItemStack sendItem = pickItem.clone();
-      p.getInventory().addItem(sendItem);
-      OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, "found-pick"));
+      // 持ち物に入りきらないときは足元に落とす
+      boolean stored = OmikujiCapsuleToyUtility.giveOrDrop(p, pickItem);
+      OmikujiCapsuleToyUtility.sendMessage(p, OmikujiCapsuleToyUtility.configText(capsuletoy, stored ? "found-pick" : "dropped-pick"));
 
     } catch (Exception e){
       OmikujiCapsuleToyUtility.logStackTrace(e);
